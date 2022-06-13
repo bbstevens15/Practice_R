@@ -1,0 +1,54 @@
+library(tidyverse)
+library(ggplot2)
+
+
+#geom_point is used to create scatterplots
+#ylim scales our y axis
+ggplot(opioid_data, aes(y=num_pills, x = republican_vote)) +
+  geom_point()+
+  theme_minimal()+
+  ylim(0, 10000000)
+
+#so we are going to add a regression line and make it simple with just the linear model
+#we see a negative trend whereas the more the republican vote is the fewer pills that are perscribed
+ggplot(opioid_data, aes(y=num_pills, x = republican_vote)) +
+  geom_point()+
+  geom_smooth(method ="lm", formula = y~x)+
+  theme_minimal()
+
+#we replace republican vote with obama care
+#a positive trend wherein higher percentage of peoplo on obama care, the higher the number of opiods perscribed
+ggplot(opioid_data, aes(y=num_pills, x = obamacare)) +
+  geom_point()+
+  geom_smooth(method ="lm", formula = y~x)+
+  theme_minimal()
+
+#the number of pills is going to be driven by the number of pills perscribed in the county
+#so we are going to use a multivaraite regression
+#multivariate meaning we have more than one outcome
+#multiple means more than one predictor
+
+#lm is the function in base R for regression
+# before the tilde is the outcome, after the tilde are the predictors
+#data = is the name of the dataset you want it to use
+#you can wrap in summary to get it to give you the outcome
+#I like to name mine then use summary
+#we see population size is driving everything
+summary(lm(num_pills ~ republican_vote + population, data = opioid_data))
+
+#we then plug obamacare in as a predictor; obama care is not significant and note it looks like a negative relationship but not significant
+summary(lm(num_pills ~ obamacare + population, data = opioid_data))
+
+#we can add a smoother than can account for nonlinearity
+ggplot(opioid_data, aes(y=num_pills, x = obamacare)) +
+  geom_point()+
+  geom_smooth()+
+  theme_minimal()
+
+ggplot(opioid_data, aes(y=num_pills, x = republican_vote)) +
+  geom_point()+
+  geom_smooth()+
+  theme_minimal()
+
+#be aware of missing data becasue that will be importatn and may be driving your results
+
